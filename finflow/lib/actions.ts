@@ -7,7 +7,37 @@ const prisma = new PrismaClient();
 
 // --- Transactions ---
 
-export async function getTransactions() {
+export async function getTransactions(
+  page: number = 1,
+  pageSize: number = 10,
+  filters?: { search?: string, type?: string, category?: string }
+) {
+  const where: any = {};
+
+  if (filters?.search) {
+    where.description = { contains: filters.search, mode: "insensitive" };
+  }
+  if (filters?.type) {
+    where.type = filters.type;
+  }
+  if (filters?.category) {
+    where.category = filters.category;
+  }
+
+  const [transactions, totalCount] = await Promise.all([
+    prisma.transaction.findMany({
+      where,
+      orderBy: { date: "desc" },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    prisma.transaction.count({ where })
+  ]);
+
+  return { transactions, totalCount };
+}
+
+export async function getAllTransactions() {
   return await prisma.transaction.findMany({
     orderBy: { date: "desc" },
   });

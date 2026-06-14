@@ -30,38 +30,31 @@ export default function TransactionsPage() {
   const [typeFilter, setTypeFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
 
-  const loadData = async () => {
+  const [totalCount, setTotalCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const loadData = async (page = 1, search = "", type = "", category = "") => {
     setLoading(true);
-    const data = await getTransactions();
-    setTxs(data);
+    const data = await getTransactions(page, 10, { search, type, category });
+    setTxs(data.transactions);
+    setTotalCount(data.totalCount);
     setLoading(false);
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    loadData(currentPage, searchTerm, typeFilter, categoryFilter);
+  }, [currentPage, searchTerm, typeFilter, categoryFilter]);
 
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this transaction?")) {
       await deleteTransaction(id);
-      loadData();
+      loadData(currentPage, searchTerm, typeFilter, categoryFilter);
     }
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
-  const filteredTxs = useMemo(() => {
-    return txs.filter((tx) => {
-      const matchSearch = tx.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchType = typeFilter ? tx.type === typeFilter : true;
-      const matchCategory = categoryFilter ? tx.category === categoryFilter : true;
-      return matchSearch && matchType && matchCategory;
-    });
-  }, [txs, searchTerm, typeFilter, categoryFilter]);
-
-  const totalPages = Math.ceil(filteredTxs.length / itemsPerPage);
-  const paginatedTxs = filteredTxs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
+  const paginatedTxs = txs;
 
   useEffect(() => {
     setCurrentPage(1);
@@ -112,7 +105,7 @@ export default function TransactionsPage() {
           <div className="overflow-x-auto">
             {loading ? (
               <div className="p-8 text-center text-slate-500">Loading transactions...</div>
-            ) : filteredTxs.length === 0 ? (
+            ) : paginatedTxs.length === 0 ? (
               <div className="p-12 text-center text-slate-500 flex flex-col items-center">
                 <ReceiptText size={48} className="mb-4 opacity-20" />
                 <p>No transactions found.</p>

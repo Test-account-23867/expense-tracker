@@ -9,7 +9,8 @@ import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { Select } from "@/components/Select";
 import { Download, Trash2, Settings as SettingsIcon } from "lucide-react";
-import { getTransactions, getEMIs, getDues, getBudgets, getSettings, updateSettings, wipeData } from "@/lib/actions";
+import { getAllTransactions, getEMIs, getDues, getBudgets, getSettings, updateSettings, wipeData } from "@/lib/actions";
+import toast from "react-hot-toast";
 
 export default function SettingsPage() {
   const [displayName, setDisplayName] = useState("Finflow User");
@@ -33,18 +34,23 @@ export default function SettingsPage() {
 
   const handleSaveSettings = async () => {
     setSaving(true);
-    await updateSettings({
-      displayName,
-      currency,
-      budgetResetDay: Number(budgetResetDay),
-    });
-    setSaving(false);
-    alert("Settings saved successfully!");
+    try {
+      await updateSettings({
+        displayName,
+        currency,
+        budgetResetDay: Number(budgetResetDay),
+      });
+      toast.success("Settings saved successfully!");
+    } catch (error) {
+      toast.error("Failed to save settings.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleExportData = async () => {
     const [txs, emis, dues, budgets] = await Promise.all([
-      getTransactions(), getEMIs(), getDues(), getBudgets()
+      getAllTransactions(), getEMIs(), getDues(), getBudgets()
     ]);
     const data = { transactions: txs, emis, dues, budgets };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -60,8 +66,12 @@ export default function SettingsPage() {
   const handleClearData = async () => {
     if (confirm("WARNING: This will permanently delete ALL your data. Are you absolutely sure?")) {
       if (confirm("Double checking: Are you REALLY sure? This action cannot be undone.")) {
-        await wipeData();
-        alert("All data has been permanently deleted.");
+        try {
+          await wipeData();
+          toast.success("All data has been permanently deleted.");
+        } catch (error) {
+          toast.error("Failed to delete data.");
+        }
       }
     }
   };

@@ -6,6 +6,7 @@ import * as z from "zod";
 import { Button } from "./Button";
 import { Input } from "./Input";
 import { createDue } from "@/lib/actions";
+import toast from "react-hot-toast";
 
 const formSchema = z.object({
   type: z.enum(["I_OWE", "OWED_TO_ME"]),
@@ -27,11 +28,16 @@ export function DueForm({ onSuccess }: { onSuccess: () => void }) {
   });
 
   const onSubmit = async (data: FormValues) => {
-    await createDue({
-      ...data,
-      dueDate: new Date(data.dueDate),
-    });
-    onSuccess();
+    try {
+      await createDue({
+        ...data,
+        dueDate: new Date(data.dueDate),
+      });
+      toast.success("Due entry added!");
+      onSuccess();
+    } catch (error) {
+      toast.error("Failed to add entry.");
+    }
   };
 
   return (

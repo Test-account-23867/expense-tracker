@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { Select } from "@/components/Select";
-import { getTransactions } from "@/lib/actions";
+import { getAllTransactions } from "@/lib/actions";
 import { formatCurrency, cn } from "@/lib/utils";
 import { Download, PieChart as PieChartIcon, TrendingUp, Wallet, ChevronDown, ChevronUp } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
@@ -26,7 +26,7 @@ export default function ReportsPage() {
   useEffect(() => {
     async function loadData() {
       setLoading(true);
-      const data = await getTransactions();
+      const data = await getAllTransactions();
       setTransactions(data);
       setLoading(false);
     }

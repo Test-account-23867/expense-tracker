@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { Modal } from "@/components/Modal";
 import { BudgetForm } from "@/components/BudgetForm";
-import { getBudgets, getTransactions } from "@/lib/actions";
+import { getBudgets, getAllTransactions } from "@/lib/actions";
 import { formatCurrency, cn } from "@/lib/utils";
 import { CATEGORIES } from "@/lib/categories";
 import { Plus, AlertTriangle, PieChart, Wallet } from "lucide-react";
@@ -24,7 +24,7 @@ export default function BudgetsPage() {
 
   const loadData = async () => {
     setLoading(true);
-    const [bData, tData] = await Promise.all([getBudgets(), getTransactions()]);
+    const [bData, tData] = await Promise.all([getBudgets(), getAllTransactions()]);
     setBudgets(bData);
     setTransactions(tData);
     setLoading(false);

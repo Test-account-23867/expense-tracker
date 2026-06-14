@@ -7,6 +7,7 @@ import { Button } from "./Button";
 import { Input } from "./Input";
 import { Select } from "./Select";
 import { createEMI } from "@/lib/actions";
+import toast from "react-hot-toast";
 
 const formSchema = z.object({
   lenderName: z.string().min(1, "Lender name is required"),
@@ -31,11 +32,16 @@ export function EmiForm({ onSuccess }: { onSuccess: () => void }) {
   });
 
   const onSubmit = async (data: FormValues) => {
-    await createEMI({
-      ...data,
-      startDate: new Date(data.startDate),
-    });
-    onSuccess();
+    try {
+      await createEMI({
+        ...data,
+        startDate: new Date(data.startDate),
+      });
+      toast.success("EMI added successfully!");
+      onSuccess();
+    } catch (error) {
+      toast.error("Failed to add EMI.");
+    }
   };
 
   return (

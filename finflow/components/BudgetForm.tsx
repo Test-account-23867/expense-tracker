@@ -8,6 +8,7 @@ import { Input } from "./Input";
 import { Select } from "./Select";
 import { CATEGORY_NAMES } from "@/lib/categories";
 import { createBudget } from "@/lib/actions";
+import toast from "react-hot-toast";
 
 const formSchema = z.object({
   category: z.string().min(1, "Category is required"),
@@ -24,11 +25,11 @@ export function BudgetForm({ onSuccess }: { onSuccess: () => void }) {
   const onSubmit = async (data: FormValues) => {
     try {
       await createBudget(data);
+      toast.success("Budget set successfully!");
       onSuccess();
     } catch (e) {
       console.error(e);
-      // Ideally handle unique constraint error for duplicate categories
-      alert("Failed to create budget. This category might already have a budget.");
+      toast.error("Failed to create budget. This category might already have a budget.");
     }
   };
 

@@ -13,6 +13,7 @@ import { formatCurrency, cn } from "@/lib/utils";
 import { Plus, Home, Car, User, BookOpen, CreditCard, HelpCircle, CalendarCheck } from "lucide-react";
 import { differenceInMonths, addMonths } from "date-fns";
 import { useCurrency } from "@/components/CurrencyProvider";
+import toast from "react-hot-toast";
 
 export default function EmisPage() {
   const { currency } = useCurrency();
@@ -32,9 +33,13 @@ export default function EmisPage() {
   }, []);
 
   const handleMarkPaid = async (emi: any) => {
-    await markEmiPaid(emi.id, emi.emiAmount, emi.lenderName);
-    alert(`Marked EMI for ${emi.lenderName} as paid!`);
-    loadData();
+    try {
+      await markEmiPaid(emi.id, emi.emiAmount, emi.lenderName);
+      toast.success(`Marked EMI for ${emi.lenderName} as paid!`);
+      loadData();
+    } catch (error) {
+      toast.error(`Failed to mark EMI for ${emi.lenderName} as paid.`);
+    }
   };
 
   const getLoanIcon = (type: string) => {

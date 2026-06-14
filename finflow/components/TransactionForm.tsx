@@ -10,6 +10,7 @@ import { CATEGORIES, CATEGORY_NAMES } from "@/lib/categories";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 import { createTransaction, updateTransaction } from "@/lib/actions";
+import toast from "react-hot-toast";
 
 const formSchema = z.object({
   type: z.enum(["INCOME", "EXPENSE"]),
@@ -58,18 +59,24 @@ export function TransactionForm({ onSuccess, initialData }: { onSuccess: () => v
   const showCustomSubcategory = selectedSubcategory === "Others";
 
   const onSubmit = async (data: FormValues) => {
-    if (initialData) {
-      await updateTransaction(initialData.id, {
-        ...data,
-        date: new Date(data.date),
-      });
-    } else {
-      await createTransaction({
-        ...data,
-        date: new Date(data.date),
-      });
+    try {
+      if (initialData) {
+        await updateTransaction(initialData.id, {
+          ...data,
+          date: new Date(data.date),
+        });
+        toast.success("Transaction updated!");
+      } else {
+        await createTransaction({
+          ...data,
+          date: new Date(data.date),
+        });
+        toast.success("Transaction added!");
+      }
+      onSuccess();
+    } catch (error) {
+      toast.error("Failed to save transaction.");
     }
-    onSuccess();
   };
 
   return (

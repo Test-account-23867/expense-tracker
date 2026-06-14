@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { CurrencyProvider } from "@/components/CurrencyProvider";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,6 +27,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <CurrencyProvider>
+            <Toaster position="bottom-right" toastOptions={{ className: 'glass-panel !bg-white/80 dark:!bg-slate-900/80 !text-slate-900 dark:!text-white' }} />
             {children}
           </CurrencyProvider>
         </ThemeProvider>

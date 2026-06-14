@@ -12,6 +12,7 @@ import { getDues, markDuePaid } from "@/lib/actions";
 import { formatCurrency, formatDate, cn } from "@/lib/utils";
 import { Plus, WalletCards, ArrowUpRight, ArrowDownLeft, AlertCircle } from "lucide-react";
 import { useCurrency } from "@/components/CurrencyProvider";
+import toast from "react-hot-toast";
 
 export default function DuesPage() {
   const { currency } = useCurrency();
@@ -38,10 +39,15 @@ export default function DuesPage() {
 
   const handlePayment = async () => {
     if (!selectedDue || paymentAmount <= 0) return;
-    const isFullPayment = paymentAmount >= selectedDue.amount;
-    await markDuePaid(selectedDue.id, paymentAmount, isFullPayment);
-    setPaymentModalOpen(false);
-    loadData();
+    try {
+      const isFullPayment = paymentAmount >= selectedDue.amount;
+      await markDuePaid(selectedDue.id, paymentAmount, isFullPayment);
+      toast.success("Payment recorded successfully!");
+      setPaymentModalOpen(false);
+      loadData();
+    } catch (error) {
+      toast.error("Failed to record payment.");
+    }
   };
 
   const filteredDues = dues.filter(d => d.type === activeTab && d.status !== "PAID")

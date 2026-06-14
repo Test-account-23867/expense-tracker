@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, useSpring, useTransform } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/Card";
 import { formatCurrency, cn } from "@/lib/utils";
-import { getTransactions, getEMIs } from "@/lib/actions";
+import { getAllTransactions, getEMIs } from "@/lib/actions";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid } from "recharts";
 import { CATEGORIES } from "@/lib/categories";
 import { Wallet, TrendingUp, TrendingDown, Percent, ArrowRight } from "lucide-react";
@@ -12,6 +12,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { MobileNav } from "@/components/MobileNav";
 import { useCurrency } from "@/components/CurrencyProvider";
+import { Input } from "@/components/Input";
 
 function AnimatedCounter({ value, currency }: { value: number, currency: string }) {
   const spring = useSpring(0, { bounce: 0, duration: 1000 });
@@ -28,10 +29,13 @@ export default function Dashboard() {
   const { currency } = useCurrency();
   const [data, setData] = useState<any>({ txs: [], emis: [] });
   const [loading, setLoading] = useState(true);
+  const [selectedMonth, setSelectedMonth] = useState<string>(
+    `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`
+  );
 
   useEffect(() => {
     async function load() {
-      const txs = await getTransactions();
+      const txs = await getAllTransactions();
       const emis = await getEMIs();
       setData({ txs, emis });
       setLoading(false);
@@ -41,8 +45,8 @@ export default function Dashboard() {
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
+  const [currentYear, currentMonthNum] = selectedMonth.split("-").map(Number);
+  const currentMonth = currentMonthNum - 1;
 
   let incomeThisMonth = 0;
   let expenseThisMonth = 0;
@@ -119,8 +123,14 @@ export default function Dashboard() {
         initial="hidden" animate="show" variants={containerVariants}
         className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 pb-24 space-y-6"
       >
-        <motion.div variants={itemVariants} className="flex justify-between items-center">
+        <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <Input
+            type="month"
+            value={selectedMonth}
+            onChange={(e: any) => setSelectedMonth(e.target.value)}
+            className="w-full sm:w-48"
+          />
         </motion.div>
 
         {/* Summary Cards */}

@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+}
+
+.dark {
+  --background: #020617;
+  --foreground: #f8fafc;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Gradient mesh background for light mode */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 15% 50%, rgba(230, 230, 250, 0.4), transparent 50%), /* Lavender */
+    radial-gradient(circle at 85% 30%, rgba(135, 206, 235, 0.4), transparent 50%), /* Sky */
+    radial-gradient(circle at 50% 80%, rgba(152, 251, 152, 0.3), transparent 50%); /* Mint */
+  filter: blur(60px);
+}
+
+/* Gradient mesh background for dark mode */
+.dark body::before {
+  background:
+    radial-gradient(circle at 15% 50%, rgba(0, 0, 128, 0.4), transparent 50%), /* Deep Navy */
+    radial-gradient(circle at 85% 30%, rgba(75, 0, 130, 0.4), transparent 50%), /* Indigo */
+    radial-gradient(circle at 50% 80%, rgba(47, 79, 79, 0.3), transparent 50%); /* Slate */
+}
+
+/* Base Glassmorphism utilities to use if needed, though mostly using Tailwind classes */
+.glass-panel {
+  @apply bg-white/10 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl shadow-lg shadow-indigo-500/10;
+}

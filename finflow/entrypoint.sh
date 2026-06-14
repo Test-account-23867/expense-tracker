@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 echo "Running migrations..."
-npx prisma migrate deploy
+npx prisma@5.15.0 migrate deploy
 echo "Seeding database..."
-npx prisma db seed
+npx prisma@5.15.0 db seed
 echo "Starting app..."
 exec node server.js

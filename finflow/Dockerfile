@@ -7,7 +7,7 @@ FROM public.ecr.aws/docker/library/node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npx prisma generate
+RUN npx prisma@5.15.0 generate
 RUN npm run build
 
 FROM public.ecr.aws/docker/library/node:20-alpine AS runner

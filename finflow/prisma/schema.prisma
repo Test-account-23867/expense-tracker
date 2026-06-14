@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Transaction {
+  id                String   @id @default(cuid())
+  type              String   // "INCOME" or "EXPENSE"
+  amount            Float
+  description       String
+  category          String
+  subcategory       String?
+  subcategoryCustom String?  // Free-text if "Others" is selected
+  date              DateTime
+  notes             String?  @db.Text
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model EMI {
+  id               String   @id @default(cuid())
+  lenderName       String
+  loanType         String   // Home, Car, Personal, Education, Credit Card, Other
+  totalLoanAmount  Float
+  emiAmount        Float
+  startDate        DateTime
+  tenureMonths     Int
+  dueDayOfMonth    Int      // 1-31
+  status           String   @default("ACTIVE") // ACTIVE, COMPLETED
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Due {
+  id          String   @id @default(cuid())
+  type        String   // "I_OWE" or "OWED_TO_ME"
+  name        String
+  amount      Float
+  dueDate     DateTime
+  description String?
+  status      String   @default("PENDING") // PENDING, PARTIAL, PAID
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Budget {
+  id        String   @id @default(cuid())
+  category  String   @unique
+  limit     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Settings {
+  id              String   @id @default("global")
+  displayName     String   @default("Finflow User")
+  currency        String   @default("INR")
+  budgetResetDay  Int      @default(1)
+  updatedAt       DateTime @updatedAt
+}
